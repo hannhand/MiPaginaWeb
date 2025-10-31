@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Login | MiPaginaWeb</title>
+</head>
+<body>
+  <h2>Iniciar sesión</h2>
+  <input id="email" type="email" placeholder="Correo electrónico"><br>
+  <input id="password" type="password" placeholder="Contraseña"><br>
+  <button id="loginBtn">Entrar</button>
+  <button id="registerBtn">Registrarse</button>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } 
+      from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC-9M4fSZmy1Ke_fG75vwPUBcuA0RIHZfU",
+      authDomain: "mipaginaweb-2d43f.firebaseapp.com",
+      projectId: "mipaginaweb-2d43f",
+      storageBucket: "mipaginaweb-2d43f.firebasestorage.app",
+      messagingSenderId: "1013331913962",
+      appId: "1:1013331913962:web:0b0dedbc7e48b15413fb93",
+      measurementId: "G-4R5S68ZFDK"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const emailInput = document.getElementById("email");
+    const passInput = document.getElementById("password");
+    const loginBtn = document.getElementById("loginBtn");
+    const registerBtn = document.getElementById("registerBtn");
+
+    loginBtn.addEventListener("click", async () => {
+      try {
+        await signInWithEmailAndPassword(auth, emailInput.value, passInput.value);
+        window.location = "panel.html";
+      } catch (error) {
+        alert("Error al iniciar sesión: " + error.message);
+      }
+    });
+
+    registerBtn.addEventListener("click", async () => {
+      try {
+        await createUserWithEmailAndPassword(auth, emailInput.value, passInput.value);
+        alert("Usuario registrado correctamente. Ya puedes iniciar sesión.");
+      } catch (error) {
+        alert("Error al registrar: " + error.message);
+      }
+    });
+  </script>
+</body>
+</html>
