@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Panel de Usuario | MiPaginaWeb</title>
+</head>
+<body>
+  <h2>Bienvenido</h2>
+  <p id="userEmail"></p>
+  <button id="logoutBtn">Cerrar sesión</button>
+
+  <h3>Cambiar nombre</h3>
+  <input type="text" id="nombre" placeholder="Nuevo nombre">
+  <button id="guardarNombre">Guardar</button>
+
+  <h3>Subir archivo</h3>
+  <input type="file" id="fileInput">
+  <button id="uploadBtn">Subir</button>
+  <p id="status"></p>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } 
+      from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import { getStorage, ref, uploadBytesResumable } 
+      from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC-9M4fSZmy1Ke_fG75vwPUBcuA0RIHZfU",
+      authDomain: "mipaginaweb-2d43f.firebaseapp.com",
+      projectId: "mipaginaweb-2d43f",
+      storageBucket: "mipaginaweb-2d43f.firebasestorage.app",
+      messagingSenderId: "1013331913962",
+      appId: "1:1013331913962:web:0b0dedbc7e48b15413fb93",
+      measurementId: "G-4R5S68ZFDK"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const storage = getStorage(app);
+
+    const userEmail = document.getElementById("userEmail");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const fileInput = document.getElementById("fileInput");
+    const uploadBtn = document.getElementById("uploadBtn");
+    const status = document.getElementById("status");
+
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        userEmail.textContent = "Conectado como: " + user.email;
+      } else {
+        window.location = "login.html";
+      }
+    });
+
+    logoutBtn.addEventListener("click", () => {
+      signOut(auth);
+    });
+
+    uploadBtn.addEventListener("click", () => {
+      const file = fileInput.files[0];
+      if (!file) return alert("Selecciona un archivo primero");
+
+      const storageRef = ref(storage, `uploads/${file.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+
+      uploadTask.on("state_changed",
+        snapshot => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          status.textContent = `Subiendo: ${progress.toFixed(0)}%`;
+        },
+        error => alert("Error: " + error.message),
+        () => alert("Archivo subido correctamente ✅")
+      );
+    });
+  </script>
+</body>
+</html>
